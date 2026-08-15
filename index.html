@@ -1,1202 +1,279 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>万花筒</title>
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --pr:#111111;--pr-l:rgba(0,0,0,.06);--pr-d:#333333;
-  --t1:#000000;--t2:#3C3C43;--t3:#6C6C70;--t4:#8E8E93;
-  --bd:rgba(60,60,67,.12);--sep:#E5E5EA;--bg:#F2F2F7;--bg2:#FFFFFF;
-  --r:10px;--sh:0 1px 4px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
-  --sh-h:0 4px 20px rgba(0,0,0,.12);
-}
-body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','SF Pro Text',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
-
-/* HEADER */
-.hd{background:rgba(255,255,255,.85);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--bd);padding:0 20px;height:52px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100;flex-shrink:0}
-.hd-logo{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;color:var(--t1);letter-spacing:-.3px;white-space:nowrap}
-.hd-logo-icon{width:30px;height:30px;border-radius:7px;background:#111;color:#fff;font-size:17px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;letter-spacing:-1px;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif}
-.hd-sub{font-size:12px;color:var(--t4);border-left:1px solid var(--bd);padding-left:12px}
-.hd-r{margin-left:auto;display:flex;align-items:center;gap:8px}
-.btn-cfg{display:flex;align-items:center;gap:5px;padding:5px 12px;border:none;border-radius:20px;background:var(--pr-l);font-size:12px;color:var(--t2);font-weight:500;cursor:pointer;transition:all .15s;font-family:inherit}
-.btn-cfg:hover{background:rgba(0,0,0,.1)}
-.status-dot{width:7px;height:7px;border-radius:50%;background:#C7C7CC;transition:background .3s;flex-shrink:0}
-.status-dot.ok{background:#34C759;animation:dotBlink 1.6s ease-in-out infinite}
-.status-dot.err{background:#FF3B30}
-@keyframes dotBlink{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(52,199,89,.5)}50%{opacity:.7;box-shadow:0 0 0 4px rgba(52,199,89,0)}}
-
-/* DESKTOP LAYOUT */
-.main{display:flex;flex:1;min-height:0;gap:0}
-.panel-l{width:405px;min-width:405px;background:#fff;box-shadow:1px 0 0 rgba(0,0,0,.08),6px 0 20px rgba(0,0,0,.04);display:flex;flex-direction:column;padding:0;gap:0;overflow-y:auto;position:relative;z-index:1}
-.form-block{padding:16px;border-bottom:1px solid rgba(0,0,0,.06)}
-.field-label{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
-.article-area{width:100%;min-height:400px;max-height:680px;padding:12px 14px;border:none;border-radius:var(--r);font-size:14px;line-height:1.7;color:var(--t1);resize:vertical;outline:none;font-family:inherit;background:var(--bg);transition:box-shadow .15s;box-shadow:inset 0 0 0 1px rgba(0,0,0,.07)}
-.article-area:focus{box-shadow:inset 0 0 0 2px var(--pr);background:var(--bg)}
-.select-row{display:flex;gap:8px}
-.sel{flex:1;height:36px;padding:0 28px 0 10px;border:none;border-radius:var(--r);font-size:13px;color:var(--t1);background:var(--bg);outline:none;cursor:pointer;font-family:inherit;box-shadow:inset 0 0 0 1px rgba(0,0,0,.07);-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238E8E93'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
-.sel:focus{box-shadow:inset 0 0 0 2px var(--pr)}
-.btn-parse{width:100%;height:44px;background:var(--pr);color:#fff;border:none;border-radius:var(--r);font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .15s;font-family:inherit}
-.btn-parse:hover{background:var(--pr-d)}
-.btn-parse:active{transform:scale(.98)}
-.btn-parse:disabled{opacity:.45;cursor:not-allowed;transform:none}
-.hint-box{margin:16px;background:var(--bg);border-radius:var(--r);padding:12px 14px;font-size:12px;color:var(--t3);line-height:1.75;border:1px solid rgba(0,0,0,.06)}
-.hint-box strong{color:var(--t2);font-weight:600}
-.panel-r{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--bg)}
-.panel-r-top{padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--bd);background:rgba(255,255,255,.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
-.panel-title{font-size:13px;font-weight:600;color:var(--t1)}
-.scene-count{font-size:11px;color:var(--t4);padding:2px 9px;background:var(--bg);border-radius:20px}
-.batch-btns{margin-left:auto;display:flex;gap:6px}
-.btn-batch{height:32px;padding:0 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;display:flex;align-items:center;gap:5px;border:none}
-.btn-batch-img{background:var(--pr);color:#fff}
-.btn-batch-img:hover{background:var(--pr-d)}
-.btn-batch-vid{background:rgba(0,0,0,.06);color:var(--t2)}
-.btn-batch-vid:hover{background:rgba(0,0,0,.1)}
-.btn-batch:disabled{opacity:.4;cursor:not-allowed}
-.btn-dl-all{height:32px;padding:0 14px;border-radius:20px;font-size:12px;cursor:pointer;font-family:inherit;background:rgba(0,0,0,.06);color:var(--t2);border:none;font-weight:600;transition:all .15s;display:flex;align-items:center;gap:5px}
-.btn-dl-all:hover{background:rgba(0,0,0,.1)}
-.cards-area{flex:1;overflow-y:auto;padding:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;align-content:start}
-
-/* EMPTY STATE */
-.empty-state{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;color:var(--t4);text-align:center}
-.empty-state .ei{font-size:44px;margin-bottom:16px;opacity:.5}
-.empty-state p{font-size:14px;line-height:1.65;color:var(--t3)}
-
-/* SCENE CARD */
-.scene-card{background:var(--bg2);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--sh);transition:box-shadow .2s;border:none}
-.scene-card:hover{box-shadow:var(--sh-h)}
-.card-thumb{width:100%;aspect-ratio:9/16;background:var(--bg);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;max-height:280px}
-.card-thumb img,.card-thumb video{width:100%;height:100%;object-fit:cover}
-.card-thumb-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--t4);font-size:11px;height:100%}
-.card-thumb-empty .num{font-size:30px;font-weight:700;color:var(--sep)}
-.card-gen-overlay{position:absolute;inset:0;background:rgba(255,255,255,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-size:12px;color:var(--t2)}
-.card-body{padding:10px 12px;flex:1;display:flex;flex-direction:column;gap:7px}
-.card-meta{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
-.card-num{font-size:10px;font-weight:700;color:#fff;background:var(--pr);border-radius:5px;padding:1px 6px}
-.card-dur,.card-motion{font-size:10px;color:var(--t3);background:var(--bg);border-radius:4px;padding:2px 7px}
-.card-sel{font-size:10px;color:var(--t3);background:var(--bg);border-radius:4px;padding:2px 5px;border:none;outline:none;font-family:inherit;cursor:pointer;-webkit-appearance:none;appearance:none;height:20px}
-.card-sel:hover{background:var(--sep)}
-.thumb-dl{position:absolute;top:7px;right:7px;width:26px;height:26px;border:none;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:background .15s;z-index:2;padding:0}
-.thumb-dl:hover{background:rgba(0,0,0,.85)}
-.card-del{margin-left:auto;width:20px;height:20px;border:none;background:none;cursor:pointer;color:var(--t4);font-size:14px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .15s;padding:0}
-.card-del:hover{background:rgba(255,59,48,.1);color:#FF3B30}
-.thumb-toggle{position:absolute;bottom:7px;right:7px;width:28px;height:28px;border:none;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:background .15s;z-index:2;padding:0}
-.thumb-toggle:hover{background:rgba(0,0,0,.8)}
-.card-field{display:flex;flex-direction:column;gap:3px}
-.card-field-label{font-size:9.5px;font-weight:600;color:var(--t4);text-transform:uppercase;letter-spacing:.4px;display:flex;align-items:center;gap:4px}
-.info-icon{width:16px;height:16px;border-radius:50%;background:var(--sep);color:var(--t3);font-size:9px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-style:normal;border:none;padding:0;font-family:inherit;transition:background .15s}
-.info-icon:hover{background:var(--bd)}
-.scene-popup{position:fixed;background:#111;color:#fff;padding:12px 14px;border-radius:12px;font-size:12px;line-height:1.75;max-width:300px;z-index:300;box-shadow:0 8px 32px rgba(0,0,0,.35);word-break:break-all;max-height:320px;overflow-y:auto;white-space:pre-wrap}
-.card-input{width:100%;padding:6px 9px;border:none;border-radius:7px;font-size:11.5px;line-height:1.6;color:var(--t1);resize:none;overflow:hidden;outline:none;font-family:inherit;background:var(--bg);transition:box-shadow .15s}
-.card-input:focus{box-shadow:inset 0 0 0 2px var(--pr)}
-.prompt-text{font-size:11px;line-height:1.7;color:var(--t2);padding:7px 9px;background:var(--bg);border-radius:7px;word-break:break-all;white-space:pre-wrap}
-.card-actions{display:flex;gap:5px;margin-top:2px}
-.btn-card{flex:1;height:28px;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;border:none;background:var(--bg);color:var(--t2);display:flex;align-items:center;justify-content:center;gap:3px}
-.btn-card:hover{background:var(--sep)}
-.btn-card.img{background:var(--pr-l);color:var(--t1)}
-.btn-card.img:hover{background:rgba(0,0,0,.1)}
-.btn-card.vid{background:rgba(0,0,0,.06);color:var(--t2)}
-.btn-card.vid:hover{background:rgba(0,0,0,.1)}
-.btn-card:disabled{opacity:.4;cursor:not-allowed}
-.card-status{font-size:10px;color:var(--t3);text-align:center;padding:2px 0}
-.card-status.ok{color:#34C759}
-.card-status.err{color:#FF3B30}
-
-/* DESKTOP TUTORIAL */
-.tutorial{grid-column:1/-1;padding:32px 24px;max-width:760px;margin:0 auto;width:100%}
-.tutorial-hd{text-align:center;margin-bottom:32px}
-.tutorial-hd .t-icon{font-size:36px;display:block;margin-bottom:10px}
-.tutorial-hd h2{font-size:18px;font-weight:700;color:var(--t1);margin:0 0 6px}
-.tutorial-hd p{font-size:13px;color:var(--t3);margin:0}
-.tut-flow{display:flex;align-items:stretch;justify-content:flex-start;gap:0;margin-bottom:28px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}
-.tut-step{display:flex;flex-direction:column;align-items:center;gap:6px;width:98px;min-width:98px;flex-shrink:0}
-.tut-num{width:24px;height:24px;border-radius:50%;background:var(--t1);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.tut-card{background:var(--bg2);border:1px solid var(--sep);border-radius:10px;padding:12px 8px 10px;text-align:center;width:100%;box-shadow:var(--sh);flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start}
-.tut-emoji{font-size:18px;height:24px;display:flex;align-items:center;justify-content:center;margin-bottom:5px;flex-shrink:0}
-.tut-title{font-size:11px;font-weight:700;color:var(--t1);margin-bottom:4px;flex-shrink:0}
-.tut-desc{font-size:10px;color:var(--t3);line-height:1.5}
-.tut-arrow{color:var(--sep);font-size:18px;margin:0 1px;flex-shrink:0;display:flex;align-items:center;padding-top:38px}
-.tut-tips{background:var(--bg);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px}
-.tut-tips-title{font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
-.tut-tip{display:flex;align-items:flex-start;gap:10px;font-size:12px;color:var(--t2);line-height:1.6}
-.tut-tip-icon{font-size:15px;flex-shrink:0;margin-top:1px}
-.tut-tip strong{color:var(--t1)}
-
-/* SPINNER */
-.spinner{width:20px;height:20px;border:2.5px solid var(--bg);border-top-color:var(--pr);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
-.spinner.sm{width:14px;height:14px;border-width:2px}
-.spinner.wh{border-color:rgba(255,255,255,.3);border-top-color:#fff}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* MODAL */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:200;display:flex;align-items:center;justify-content:center}
-.modal-bg.hidden{display:none}
-.modal{background:var(--bg2);border-radius:16px;width:400px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,.25);padding:24px}
-.modal-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-.modal-title{font-size:16px;font-weight:700;color:var(--t1)}
-.modal-close{width:28px;height:28px;border:none;background:var(--bg);border-radius:50%;cursor:pointer;font-size:14px;color:var(--t2);display:flex;align-items:center;justify-content:center}
-.modal-close:hover{background:var(--sep)}
-.modal-field{margin-bottom:14px}
-.modal-label{font-size:12px;font-weight:600;color:var(--t2);margin-bottom:6px;display:block}
-.modal-input{width:100%;height:38px;padding:0 12px;border:none;border-radius:var(--r);font-size:14px;color:var(--t1);outline:none;font-family:inherit;background:var(--bg);transition:box-shadow .15s}
-.modal-input:focus{box-shadow:inset 0 0 0 2px var(--pr)}
-select.modal-input{-webkit-appearance:none;appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238E8E93'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:30px}
-.modal-note{font-size:11px;color:var(--t4);margin-top:4px;line-height:1.55}
-.modal-save{width:100%;height:44px;background:var(--pr);color:#fff;border:none;border-radius:var(--r);font-size:15px;font-weight:600;cursor:pointer;margin-top:6px;font-family:inherit;transition:all .15s}
-.modal-save:hover{background:var(--pr-d)}
-.modal-save:active{transform:scale(.98)}
-.modal-divider{border:none;border-top:1px solid var(--bd);margin:16px 0}
-
-/* === MOBILE APP === */
-.is-mobile .hd-sub{display:none}
-.is-mobile .hd{padding:0 14px;gap:10px}
-#mobileApp{flex:1;display:none;flex-direction:column;min-height:0;overflow:hidden}
-.m-panel{background:var(--bg2);border-bottom:1px solid var(--sep);flex-shrink:0}
-.m-panel-head{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;cursor:pointer;font-size:14px;font-weight:600;color:var(--t1);-webkit-tap-highlight-color:transparent;user-select:none}
-.m-panel-head:active{background:rgba(0,0,0,.04)}
-.m-chevron{transition:transform .2s;font-size:11px;color:var(--t4)}
-.m-chevron.open{transform:rotate(180deg)}
-.m-panel-body{padding:0 16px 16px;display:flex;flex-direction:column;gap:10px}
-.m-panel-body.collapsed{display:none}
-.m-selgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.m-selgrid .sel{width:100%}
-.m-textarea{width:100%;min-height:130px;max-height:280px;padding:12px 14px;border:none;border-radius:var(--r);font-size:14px;line-height:1.7;color:var(--t1);resize:vertical;outline:none;font-family:inherit;background:var(--bg);box-shadow:inset 0 0 0 1px rgba(0,0,0,.07);transition:box-shadow .15s}
-.m-textarea:focus{box-shadow:inset 0 0 0 2px var(--pr)}
-.m-parse-btn{width:100%;height:48px;background:var(--pr);color:#fff;border:none;border-radius:var(--r);font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;font-family:inherit;-webkit-tap-highlight-color:transparent;transition:all .15s}
-.m-parse-btn:active{background:var(--pr-d);transform:scale(.98)}
-.m-parse-btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
-.m-batch-bar{display:flex;align-items:center;gap:6px;padding:8px 12px;background:var(--bg2);border-bottom:1px solid var(--sep);position:sticky;top:0;z-index:10;flex-shrink:0}
-.m-batch-bar .btn-batch{flex:1;height:34px;font-size:12px;padding:0 8px}
-.m-batch-bar .btn-dl-all{height:34px;padding:0 12px}
-.m-batch-bar .scene-count{flex-shrink:0}
-.m-cards-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 16px;display:flex;flex-direction:column;gap:10px}
-.m-card{background:var(--bg2);border-radius:12px;overflow:hidden;box-shadow:var(--sh);display:flex;flex-direction:column}
-.m-card-thumb{width:100%;height:160px;background:var(--bg);position:relative;overflow:hidden;flex-shrink:0}
-.m-card-thumb img,.m-card-thumb video{width:100%;height:100%;object-fit:cover}
-.m-thumb-empty{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:42px;font-weight:700;color:var(--sep)}
-.m-scene-text{font-size:12px;line-height:1.6;color:var(--t2);word-break:break-all}
-.m-tutorial{padding:24px 4px}
-.m-tut-hd{text-align:center;margin-bottom:24px}
-.m-tut-hd .t-icon{font-size:32px;display:block;margin-bottom:8px}
-.m-tut-hd h2{font-size:18px;font-weight:700;color:var(--t1);margin:0 0 6px}
-.m-tut-hd p{font-size:13px;color:var(--t3);margin:0;line-height:1.6}
-.m-tut-steps{display:flex;flex-direction:column;margin-bottom:20px;background:var(--bg2);border-radius:12px;overflow:hidden;box-shadow:var(--sh)}
-.m-tut-step{display:flex;align-items:flex-start;gap:14px;padding:14px 16px;border-bottom:1px solid var(--sep)}
-.m-tut-step:last-child{border-bottom:none}
-.m-tut-step-num{width:22px;height:22px;border-radius:50%;background:var(--t1);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
-.m-tut-step-cnt{flex:1}
-.m-tut-step-title{font-size:13px;font-weight:700;color:var(--t1);margin-bottom:3px}
-.m-tut-step-desc{font-size:12px;color:var(--t3);line-height:1.5}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Designer Tools Legacy · Yehloo Lau</title>
+  <meta name="description" content="Yehloo Lau 的历史设计工具入口，保留早期单文件实验与迁移后的项目跳转。">
+  <meta property="og:title" content="Designer Tools Legacy">
+  <meta property="og:description" content="历史设计工具入口：万花筒、AI News Station、Design Cockpit 等早期工具与跳转。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://yehloolau-afk.github.io/designer-tools-legacy/">
+  <meta name="theme-color" content="#111111">
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f4f5f2;
+      --surface: #ffffff;
+      --surface-soft: #eceee7;
+      --text: #151515;
+      --muted: #666961;
+      --line: rgba(21, 21, 21, 0.12);
+      --accent: #0f766e;
+      --accent-soft: rgba(15, 118, 110, 0.1);
+      --shadow: 0 12px 32px rgba(20, 20, 18, 0.08);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #11120f;
+        --surface: #1a1b17;
+        --surface-soft: #24251f;
+        --text: #f2f1eb;
+        --muted: #aaa79b;
+        --line: rgba(242, 241, 235, 0.14);
+        --accent: #2dd4bf;
+        --accent-soft: rgba(45, 212, 191, 0.12);
+        --shadow: 0 12px 32px rgba(0, 0, 0, 0.24);
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+    a {
+      color: inherit;
+      text-decoration: none;
+      -webkit-tap-highlight-color: rgba(15, 118, 110, 0.16);
+      touch-action: manipulation;
+    }
+    .page {
+      width: min(1040px, 100%);
+      margin: 0 auto;
+      padding: 22px;
+    }
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 6px 0 36px;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      background: var(--text);
+      color: var(--bg);
+    }
+    .nav a:not(.brand) {
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: color-mix(in srgb, var(--surface) 72%, transparent);
+      font-size: 14px;
+    }
+    .hero {
+      display: grid;
+      gap: 22px;
+      padding: 44px 0 52px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow {
+      margin: 0;
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    h1 {
+      max-width: 780px;
+      margin: 0;
+      font-size: clamp(40px, 7vw, 80px);
+      line-height: 0.98;
+      letter-spacing: 0;
+    }
+    .lead {
+      max-width: 720px;
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(17px, 2.5vw, 22px);
+      line-height: 1.55;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 32px;
+    }
+    .card {
+      min-height: 250px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+      box-shadow: var(--shadow);
+    }
+    .badge {
+      width: fit-content;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    h2 {
+      margin: 14px 0 8px;
+      font-size: 24px;
+      letter-spacing: 0;
+    }
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .link {
+      color: var(--accent);
+      font-weight: 800;
+    }
+    .note {
+      margin-top: 28px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface-soft);
+      color: var(--muted);
+      line-height: 1.65;
+    }
+    footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 34px 0 14px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    @media (max-width: 760px) {
+      .page { padding: 18px; }
+      .nav { align-items: flex-start; flex-direction: column; padding-bottom: 26px; }
+      .hero { padding: 34px 0 40px; }
+      .grid { grid-template-columns: 1fr; }
+      footer { align-items: flex-start; flex-direction: column; }
+    }
+  </style>
 </head>
 <body>
+  <div class="page">
+    <nav class="nav" aria-label="Primary">
+      <a class="brand" href="https://yehloolau-afk.github.io/">
+        <span class="brand-mark">Y</span>
+        <span>Designer Tools Legacy</span>
+      </a>
+      <a href="https://github.com/yehloolau-afk/designer-tools-legacy">GitHub</a>
+    </nav>
 
-<!-- HEADER (shared) -->
-<div class="hd">
-  <div class="hd-logo"><div class="hd-logo-icon">7</div><span>万花筒</span></div>
-  <div class="hd-sub">分镜 · 生图 · 生视频</div>
-  <div class="hd-r">
-    <div class="status-dot" id="statusDot"></div>
-    <button class="btn-cfg" onclick="openConfig()">⚙️ API 配置</button>
+    <main>
+      <section class="hero">
+        <p class="eyebrow">Legacy Archive</p>
+        <h1>Early design-tool experiments, kept as a tidy archive.</h1>
+        <p class="lead">This repository preserves older single-file tools and compatibility redirects. The active products now live in their own repositories and Pages sites.</p>
+      </section>
+
+      <section class="grid" aria-label="Tools and redirects">
+        <a class="card" href="https://yehloolau-afk.github.io/wanhuatong/">
+          <span>
+            <span class="badge">Active Project</span>
+            <h2>WanHuaTong</h2>
+            <p>Elementary school text-to-video automation. This is the current home for the tool that used to live here as the main page.</p>
+          </span>
+          <span class="link">Open active site</span>
+        </a>
+
+        <a class="card" href="https://yehloolau-afk.github.io/ai-news-station/">
+          <span>
+            <span class="badge">Redirected</span>
+            <h2>AI News Station</h2>
+            <p>The old AI station entry now redirects to the dedicated AI News Station repository and production Pages site.</p>
+          </span>
+          <span class="link">Open active site</span>
+        </a>
+
+        <a class="card" href="design-cockpit.html">
+          <span>
+            <span class="badge">Archived Tool</span>
+            <h2>Design Cockpit</h2>
+            <p>An earlier design cockpit experiment retained for reference. It is not the primary maintained project.</p>
+          </span>
+          <span class="link">Open archived file</span>
+        </a>
+
+        <a class="card" href="project.html">
+          <span>
+            <span class="badge">Archived Page</span>
+            <h2>Project Page</h2>
+            <p>A legacy project page kept so old references do not disappear during cleanup.</p>
+          </span>
+          <span class="link">Open archived file</span>
+        </a>
+
+        <a class="card" href="ai-station.html">
+          <span>
+            <span class="badge">Compatibility</span>
+            <h2>Old AI Station URL</h2>
+            <p>A small redirect file for the original AI station URL.</p>
+          </span>
+          <span class="link">Follow redirect</span>
+        </a>
+
+        <a class="card" href="https://github.com/yehloolau-afk/designer-tools-legacy">
+          <span>
+            <span class="badge">Repository</span>
+            <h2>Source Archive</h2>
+            <p>Browse the historical files, scripts, data snapshots, and notes behind this archive.</p>
+          </span>
+          <span class="link">View code</span>
+        </a>
+      </section>
+
+      <p class="note">Primary development has moved to separate repositories: AI News Station for the news hub, WanHuaTong for text-to-video automation, and the personal root site for portfolio navigation.</p>
+    </main>
+
+    <footer>
+      <span>Yehloo Lau · historical designer tools archive</span>
+      <span><a href="https://yehloolau-afk.github.io/">Personal site</a></span>
+    </footer>
   </div>
-</div>
-
-<!-- DESKTOP APP -->
-<div class="main" id="desktopApp">
-  <!-- LEFT: INPUT -->
-  <div class="panel-l">
-    <div class="form-block">
-      <div class="field-label">文本内容</div>
-      <textarea class="article-area" id="articleInput" placeholder="粘贴任意文本，如课文、故事、诗词、科普文章…"></textarea>
-    </div>
-    <div class="form-block">
-      <div class="field-label">年级 · 画面风格</div>
-      <div class="select-row">
-        <select class="sel" id="gradeSelect">
-          <option value="一年级" selected>一年级</option>
-          <option value="二年级">二年级</option>
-          <option value="三年级">三年级</option>
-          <option value="四年级">四年级</option>
-          <option value="五年级">五年级</option>
-          <option value="六年级">六年级</option>
-        </select>
-        <select class="sel" id="styleSelect">
-          <option value="故事绘本">故事绘本</option>
-          <option value="卡通动漫">卡通动漫</option>
-          <option value="中国水墨">中国水墨</option>
-          <option value="写实国风">写实国风</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-block">
-      <div class="field-label">输出尺寸</div>
-      <select class="sel" id="sizeSelect">
-        <option value="9:16">抖音竖屏 9:16（竖屏短视频）</option>
-        <option value="3:4">小红书竖版 3:4</option>
-        <option value="1:1">小红书方形 1:1</option>
-        <option value="16:9">横屏 16:9（YouTube / B站）</option>
-      </select>
-    </div>
-    <div class="form-block">
-      <div class="field-label">分镜数量</div>
-      <select class="sel" id="sceneCount">
-        <option value="4">4 个场景（约 20 秒）</option>
-        <option value="5">5 个场景（约 25 秒）</option>
-        <option value="6" selected>6 个场景（约 30 秒）</option>
-        <option value="8">8 个场景（约 40 秒）</option>
-        <option value="10">10 个场景（约 50 秒）</option>
-      </select>
-    </div>
-    <div class="form-block" style="border-bottom:none">
-      <button class="btn-parse" id="parseBtn" onclick="parseArticle()">✨ 解析分镜脚本</button>
-    </div>
-    <div class="hint-box">
-      <strong>工作流</strong>
-      <ul style="margin-top:8px;padding:0">
-        <li>① 粘贴文本 → 解析分镜</li>
-        <li>② 检查 / 编辑场景卡片</li>
-        <li>③ 批量生图 → 批量生视频</li>
-        <li>④ 下载素材 → AE 合成</li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- RIGHT: STORYBOARD -->
-  <div class="panel-r">
-    <div class="panel-r-top">
-      <div class="panel-title">分镜脚本</div>
-      <div class="scene-count" id="sceneCountBadge">0 个场景</div>
-      <div class="batch-btns">
-        <button class="btn-batch btn-batch-img" id="batchImgBtn" onclick="batchGenImages()" disabled>🖼 批量生图</button>
-        <button class="btn-batch btn-batch-vid" id="batchVidBtn" onclick="batchGenVideos()" disabled>🎬 批量生视频</button>
-        <button class="btn-dl-all" id="dlAllBtn" onclick="downloadAll()" style="display:none">⬇ 全部下载</button>
-      </div>
-    </div>
-    <div class="cards-area" id="cardsArea">
-      <div id="tutorialPlaceholder"></div>
-    </div>
-  </div>
-</div>
-
-<!-- MOBILE APP -->
-<div id="mobileApp">
-  <!-- Input accordion -->
-  <div class="m-panel">
-    <div class="m-panel-head" onclick="toggleMobileInput()">
-      <span>✏️ 粘贴文本 · 配置参数</span>
-      <span class="m-chevron open" id="mChevron">▲</span>
-    </div>
-    <div class="m-panel-body" id="mPanelBody">
-      <textarea class="m-textarea" id="m-article" placeholder="粘贴任意文本，如课文、故事、诗词…"></textarea>
-      <div class="m-selgrid">
-        <div>
-          <div class="field-label">年级</div>
-          <select class="sel" id="m-grade">
-            <option value="一年级" selected>一年级</option>
-            <option value="二年级">二年级</option>
-            <option value="三年级">三年级</option>
-            <option value="四年级">四年级</option>
-            <option value="五年级">五年级</option>
-            <option value="六年级">六年级</option>
-          </select>
-        </div>
-        <div>
-          <div class="field-label">画面风格</div>
-          <select class="sel" id="m-style">
-            <option value="故事绘本">故事绘本</option>
-            <option value="卡通动漫">卡通动漫</option>
-            <option value="中国水墨">中国水墨</option>
-            <option value="写实国风">写实国风</option>
-          </select>
-        </div>
-        <div>
-          <div class="field-label">输出尺寸</div>
-          <select class="sel" id="m-size">
-            <option value="9:16">抖音 9:16</option>
-            <option value="3:4">小红书 3:4</option>
-            <option value="1:1">方形 1:1</option>
-            <option value="16:9">横屏 16:9</option>
-          </select>
-        </div>
-        <div>
-          <div class="field-label">场景数量</div>
-          <select class="sel" id="m-count">
-            <option value="4">4 个场景</option>
-            <option value="5">5 个场景</option>
-            <option value="6" selected>6 个场景</option>
-            <option value="8">8 个场景</option>
-            <option value="10">10 个场景</option>
-          </select>
-        </div>
-      </div>
-      <button class="m-parse-btn" id="m-parseBtn" onclick="parseArticle()">✨ 解析分镜脚本</button>
-    </div>
-  </div>
-
-  <!-- Batch bar (hidden until parsed) -->
-  <div class="m-batch-bar" id="m-batchBar" style="display:none">
-    <span class="scene-count" id="m-sceneCountBadge">0 个</span>
-    <button class="btn-batch btn-batch-img" id="m-batchImgBtn" onclick="batchGenImages()" disabled>🖼 批量生图</button>
-    <button class="btn-batch btn-batch-vid" id="m-batchVidBtn" onclick="batchGenVideos()" disabled>🎬 批量生视频</button>
-    <button class="btn-dl-all" id="m-dlAllBtn" onclick="downloadAll()" style="display:none">⬇</button>
-  </div>
-
-  <!-- Cards -->
-  <div class="m-cards-area" id="m-cardsArea"></div>
-</div>
-
-<!-- API CONFIG MODAL (shared) -->
-<div class="modal-bg hidden" id="configModal">
-  <div class="modal">
-    <div class="modal-hd">
-      <div class="modal-title">⚙️ API 配置</div>
-      <button class="modal-close" onclick="closeConfig()">✕</button>
-    </div>
-    <div class="modal-field">
-      <label class="modal-label">火山方舟 API Key <span style="color:#ff4d4f">*</span></label>
-      <div style="display:flex;gap:6px;align-items:center">
-        <input class="modal-input" id="volcKey" type="password" placeholder="ARK…" style="flex:1;min-width:0"/>
-        <button type="button" onclick="toggleKeyVisible()" id="keyToggleBtn" style="height:38px;padding:0 10px;border:none;border-radius:var(--r);background:var(--bg);color:var(--t3);font-size:13px;cursor:pointer;white-space:nowrap;font-family:inherit;flex-shrink:0">👁</button>
-        <button type="button" onclick="copyApiKey()" id="keyCopyBtn" style="height:38px;padding:0 10px;border:none;border-radius:var(--r);background:var(--bg);color:var(--t3);font-size:13px;cursor:pointer;white-space:nowrap;font-family:inherit;flex-shrink:0">复制</button>
-      </div>
-      <div class="modal-note">分镜解析 / 生图 / 生视频全部用同一个 Key。换浏览器时：点「复制」→ 新浏览器粘贴即可</div>
-    </div>
-    <div class="modal-field">
-      <label class="modal-label">图片模型</label>
-      <select class="modal-input" id="imgModel" style="cursor:pointer">
-        <option value="doubao-seedream-5-0-260128">Seedream 5.0（推荐）</option>
-        <option value="doubao-seedream-4-5-251128">Seedream 4.5</option>
-      </select>
-    </div>
-    <div class="modal-field">
-      <label class="modal-label">视频模型</label>
-      <select class="modal-input" id="vidModel" style="cursor:pointer">
-        <option value="doubao-seedance-1-5-pro-251215">Seedance 1.5 Pro（推荐）</option>
-        <option value="doubao-seedance-2-0-fast-260128">Seedance 2.0 Fast</option>
-        <option value="doubao-seedance-1-0-lite-250521">Seedance 1.0 Lite</option>
-      </select>
-    </div>
-    <hr class="modal-divider"/>
-    <div class="modal-field">
-      <label class="modal-label">图片代理 URL <span style="color:var(--t4);font-weight:400">（可选，留空用默认）</span></label>
-      <input class="modal-input" id="customImgProxy" type="url" placeholder="https://your-worker.workers.dev"/>
-      <div class="modal-note">默认代理超时 10 秒，Seedream 出图需 15-30 秒时会报错。填入自建 Cloudflare Worker URL 可彻底解决——详见项目 <code>cloudflare-workers/volc-img-worker.js</code></div>
-    </div>
-    <button class="modal-save" onclick="saveConfig()">保存配置</button>
-  </div>
-</div>
-
-<script>
-// ─── DEVICE DETECTION ─────────────────────────────────────────
-const IS_MOBILE_MODE = window.innerWidth < 768 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-// ─── ENV ──────────────────────────────────────────────────────
-const IS_LOCAL   = location.hostname === 'localhost';
-const IS_NETLIFY = location.hostname.includes('netlify');
-const PROXY_BASE = IS_LOCAL ? '' : (IS_NETLIFY ? '' : 'https://wanhuatong-a.netlify.app');
-const IMG_URL  = IS_LOCAL ? 'http://localhost:8766/images/generations'         : `${PROXY_BASE}/.netlify/functions/volc-img`;
-const VID_URL  = IS_LOCAL ? 'http://localhost:8766/contents/generations/tasks' : `${PROXY_BASE}/.netlify/functions/volc-vid`;
-const TXT_URL  = IS_LOCAL ? 'http://localhost:8766/chat/completions'           : `${PROXY_BASE}/.netlify/functions/volc-txt`;
-const pollUrl  = id => IS_LOCAL
-  ? `http://localhost:8766/contents/generations/tasks/${id}`
-  : `${PROXY_BASE}/.netlify/functions/volc-vid?taskId=${id}`;
-
-// ─── CONFIG ───────────────────────────────────────────────────
-const LS = {
-  get: k => { try { return localStorage.getItem(k) || '' } catch(e) { return '' } },
-  set: (k,v) => { try { localStorage.setItem(k,v) } catch(e) {} }
-};
-
-function loadConfig() {
-  const cfg = getCfg();
-  document.getElementById('volcKey').value = cfg.volcKey;
-  document.getElementById('imgModel').value = cfg.imgModel;
-  document.getElementById('vidModel').value = cfg.vidModel;
-  document.getElementById('customImgProxy').value = cfg.customImgProxy;
-  updateStatusDot();
-}
-
-function saveConfig() {
-  const volcInput = document.getElementById('volcKey').value.trim();
-  if (volcInput) LS.set('wht_volc_key', volcInput);
-  LS.set('wht_img_model', document.getElementById('imgModel').value);
-  LS.set('wht_vid_model', document.getElementById('vidModel').value);
-  const proxy = document.getElementById('customImgProxy').value.trim();
-  LS.set('wht_img_proxy', proxy);
-  updateStatusDot();
-  closeConfig();
-}
-
-function getCfg() {
-  const imggenCfg = (() => { try { return JSON.parse(localStorage.getItem('imggen_cfg')||'{}'); } catch { return {}; } })();
-  return {
-    volcKey: LS.get('wht_volc_key') || imggenCfg.key || '',
-    txtModel: LS.get('wht_txt_model') || 'doubao-1-5-pro-32k-250115',
-    imgModel: LS.get('wht_img_model') || imggenCfg.model || 'doubao-seedream-5-0-260128',
-    vidModel: LS.get('wht_vid_model') || 'doubao-seedance-1-5-pro-251215',
-    customImgProxy: LS.get('wht_img_proxy') || '',
-  };
-}
-
-function getImgUrl() {
-  const custom = LS.get('wht_img_proxy');
-  if (custom) return custom.replace(/\/$/, '');
-  return IS_LOCAL ? 'http://localhost:8766/images/generations' : `${PROXY_BASE}/.netlify/functions/volc-img`;
-}
-
-function updateStatusDot() {
-  const cfg = getCfg();
-  const dot = document.getElementById('statusDot');
-  dot.className = 'status-dot ' + (cfg.volcKey ? 'ok' : 'err');
-}
-
-function openConfig() {
-  loadConfig();
-  document.getElementById('configModal').classList.remove('hidden');
-}
-function closeConfig() {
-  document.getElementById('configModal').classList.add('hidden');
-}
-document.getElementById('configModal').addEventListener('click', e => {
-  if (e.target === e.currentTarget) closeConfig();
-});
-
-// ─── SCENE DATA ───────────────────────────────────────────────
-let scenes = [];
-
-const STYLE_PROMPTS = {
-  '故事绘本': 'children\'s storybook illustration style, soft watercolor, warm pastel colors, flat 2D art, gentle rounded shapes, cozy and heartwarming atmosphere',
-  '卡通动漫': 'cute cartoon anime style, bright vivid colors, clean bold outlines, 2D animation, expressive characters, cheerful mood',
-  '中国水墨': 'traditional Chinese ink wash painting, brush strokes on rice paper texture, monochromatic with subtle color washes, elegant minimalist composition',
-  '写实国风': 'realistic Chinese traditional style, detailed brushwork, rich warm colors, cinematic lighting, ancient Chinese architecture and nature',
-};
-
-const MOTION_LABELS = {
-  'zoom_in': '推进',
-  'zoom_out': '拉远',
-  'pan_left': '左移',
-  'pan_right': '右移',
-  'static': '静止',
-};
-
-// ─── 本地分镜解析 ─────────────────────────────────────────────
-const VISUAL_KEYWORDS = ['看','见','望','听','走','跑','跳','飞','落','升','站','坐','躺','笑','哭','喊','叫','出现','消失','变','长','开','关','明','暗','红','绿','蓝','黄','白','黑','大','小','高','低','远','近','花','树','草','山','水','云','风','雨','雪','日','月','星','鸟','鱼','虫','人','孩','童','老','母','父','师','友','家','屋','路','桥','田','海','河','湖','船','马','牛','羊','春','夏','秋','冬','晨','午','暮','夜'];
-const SCENE_TEMPLATES = {
-  '故事绘本': (cn, style, comp) => `${cn}，故事绘本插画风格，柔和水彩质感，暖色系马卡龙色调，扁平2D插画，圆润可爱造型，温馨氛围，${comp}`,
-  '卡通动漫': (cn, style, comp) => `${cn}，卡通动漫风格，色彩鲜艳，线条清晰，2D动画赛璐璐质感，人物表情生动，氛围活泼，${comp}`,
-  '中国水墨': (cn, style, comp) => `${cn}，中国传统水墨画风格，笔墨晕染，宣纸质感，留白意境，色调淡雅清新，${comp}`,
-  '写实国风': (cn, style, comp) => `${cn}，写实国风风格，工笔细腻，色彩浓郁温暖，古典场景氛围，电影感光影，${comp}`,
-};
-
-const ZH2EN = {'春天':'spring scenery','夏天':'summer scene','秋天':'autumn scene','冬天':'winter scene','树木':'trees in nature','花朵':'blooming flowers','山':'misty mountains','河流':'flowing river','大海':'vast ocean','天空':'vast sky','云朵':'floating clouds','阳光':'warm sunlight','雨':'rain falling','雪':'snow falling','风':'wind blowing','孩子':'child','小朋友':'children playing','老师':'teacher','父亲':'father figure','母亲':'mother figure','鸟儿':'birds flying','鱼':'fish swimming','蝴蝶':'butterfly','村庄':'peaceful village','田野':'open countryside fields','夜晚':'night scene moonlight','早晨':'morning dawn light','夕阳':'sunset golden hour','教室':'classroom','家':'cozy home interior','桥':'ancient stone bridge','小路':'winding path','竹林':'bamboo forest','松树':'pine tree','荷花':'lotus flower pond','梅花':'plum blossom','草地':'green meadow','森林':'lush forest'};
-
-function scoreVisual(sentence) {
-  let score = sentence.length > 8 ? 2 : 0;
-  for (const kw of VISUAL_KEYWORDS) if (sentence.includes(kw)) score += 2;
-  for (const [zh] of Object.entries(ZH2EN)) if (sentence.includes(zh)) score += 3;
-  return score;
-}
-
-function localParse(article, count, style) {
-  const styleBase = STYLE_PROMPTS[style] || STYLE_PROMPTS['故事绘本'];
-  const tplFn = SCENE_TEMPLATES[style] || SCENE_TEMPLATES['故事绘本'];
-  const sizeKey = getSelectedSize();
-  const compPrompt = (SIZE_MAP[sizeKey] || SIZE_MAP['9:16']).prompt;
-
-  const raw = article.replace(/\n+/g, '。').split(/[。！？…]/g).map(s => s.trim()).filter(s => s.length > 3);
-  if (!raw.length) return [];
-
-  const scored = raw.map((s, i) => ({ s, i, score: scoreVisual(s) })).sort((a, b) => b.score - a.score);
-  const top = scored.slice(0, count).sort((a, b) => a.i - b.i);
-
-  const motions = ['zoom_in','static','zoom_out','pan_right','static','zoom_in','pan_left','static','zoom_out','static'];
-
-  return top.map((item, idx) => ({
-    id: idx + 1,
-    scene_cn: item.s,
-    prompt_en: tplFn(item.s, styleBase, compPrompt),
-    duration: 4,
-    motion: motions[idx % motions.length],
-    imageSrc: null,
-    videoUrl: null,
-    state: 'idle',
-  }));
-}
-
-// ─── LLM PROMPT ENHANCEMENT ───────────────────────────────────
-async function enhancePromptsWithLLM(scenes, style, sizeKey) {
-  const cfg = getCfg();
-  if (!cfg.volcKey) return;
-
-  const sizeLabel = (SIZE_MAP[sizeKey] || SIZE_MAP['9:16']).label;
-  const styleDesc = {
-    '故事绘本': '故事绘本风格，柔和水彩，暖色调，扁平2D，圆润可爱',
-    '卡通动漫': '卡通动漫风格，鲜艳色彩，清晰轮廓，2D动画感',
-    '中国水墨': '中国传统水墨画风格，笔墨晕染，留白意境，淡雅',
-    '写实国风': '写实国风风格，工笔细腻，色彩浓郁，古典意境',
-  }[style] || style;
-
-  const userMsg = `以下是从文章中提取的场景片段，请为每个场景生成一条详细的中文图像提示词。
-
-画面风格：${styleDesc}
-输出比例：${sizeLabel}
-
-核心要求：
-- 必须忠实还原场景片段的具体内容（地点、人物、光线、氛围等），不得偏离原意
-- 在原意基础上补充视觉细节（色彩、光影、构图、材质）
-- 融入指定画面风格
-- 每条 80-120 字
-- 返回纯 JSON，格式：{"prompts":["提示词1","提示词2",...]}，不要任何其他文字
-
-场景列表：
-${scenes.map((s, i) => `${i + 1}. ${s.scene_cn}`).join('\n')}`;
-
-  try {
-    const res = await fetch(TXT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${cfg.volcKey}` },
-      body: JSON.stringify({
-        model: cfg.txtModel,
-        messages: [
-          { role: 'system', content: '你是专业的 AI 图像提示词工程师，为火山引擎 Seedream 模型生成中文提示词。核心原则：必须忠实还原场景原文的具体内容，在此基础上补充视觉细节。只返回 JSON，不输出任何解释文字。' },
-          { role: 'user', content: userMsg },
-        ],
-        temperature: 0.5,
-      }),
-    });
-    const data = await res.json();
-    const raw = data.choices?.[0]?.message?.content || '';
-    const match = raw.match(/\{[\s\S]*\}/);
-    if (!match) return;
-    const parsed = JSON.parse(match[0]);
-    const prompts = parsed.prompts;
-    if (!Array.isArray(prompts)) return;
-    prompts.forEach((p, i) => { if (scenes[i] && p) scenes[i].prompt_en = p; });
-  } catch (e) {
-    console.warn('提示词增强失败，使用本地生成：', e.message);
-  }
-}
-
-// ─── HELPERS ──────────────────────────────────────────────────
-function getEl(id) {
-  return document.getElementById(IS_MOBILE_MODE ? 'm-' + id : id);
-}
-
-function getCardsArea() {
-  return document.getElementById(IS_MOBILE_MODE ? 'm-cardsArea' : 'cardsArea');
-}
-
-function getSelectedSize() {
-  const el = document.getElementById(IS_MOBILE_MODE ? 'm-size' : 'sizeSelect');
-  return el ? el.value : '9:16';
-}
-
-// ─── PARSE STORYBOARD ─────────────────────────────────────────
-async function parseArticle() {
-  let article, style, count;
-  if (IS_MOBILE_MODE) {
-    article = document.getElementById('m-article').value.trim();
-    style   = document.getElementById('m-style').value;
-    count   = parseInt(document.getElementById('m-count').value);
-  } else {
-    article = document.getElementById('articleInput').value.trim();
-    style   = document.getElementById('styleSelect').value;
-    count   = parseInt(document.getElementById('sceneCount').value);
-  }
-  if (!article) { alert('请先粘贴文本内容'); return; }
-
-  const parseBtn = document.getElementById(IS_MOBILE_MODE ? 'm-parseBtn' : 'parseBtn');
-  const cardsArea = getCardsArea();
-
-  parseBtn.disabled = true;
-  parseBtn.innerHTML = '<div class="spinner sm wh"></div> 正在解析…';
-
-  cardsArea.innerHTML = `
-    <div class="empty-state">
-      <div class="spinner" style="width:28px;height:28px;margin-bottom:14px"></div>
-      <p>正在提取关键画面…</p>
-    </div>`;
-
-  await new Promise(r => setTimeout(r, 300));
-  scenes = localParse(article, count, style);
-
-  if (!scenes.length) {
-    cardsArea.innerHTML = `<div class="empty-state"><p style="color:#ff4d4f">未能识别有效内容，请检查文章是否为中文</p></div>`;
-    parseBtn.disabled = false;
-    parseBtn.innerHTML = '✨ 解析分镜脚本';
-    return;
-  }
-
-  cardsArea.innerHTML = `
-    <div class="empty-state">
-      <div class="spinner" style="width:28px;height:28px;margin-bottom:14px"></div>
-      <p>AI 正在生成图像提示词…</p>
-    </div>`;
-  await enhancePromptsWithLLM(scenes, style, getSelectedSize());
-
-  renderCards();
-
-  // Auto-collapse input panel on mobile after parsing
-  if (IS_MOBILE_MODE) collapseMobileInput();
-
-  getEl('batchImgBtn').disabled = false;
-  parseBtn.disabled = false;
-  parseBtn.innerHTML = '✨ 解析分镜脚本';
-}
-
-// ─── MOBILE INPUT TOGGLE ──────────────────────────────────────
-function toggleMobileInput() {
-  const body = document.getElementById('mPanelBody');
-  const chevron = document.getElementById('mChevron');
-  if (body.classList.contains('collapsed')) {
-    body.classList.remove('collapsed');
-    chevron.classList.add('open');
-    chevron.textContent = '▲';
-  } else {
-    body.classList.add('collapsed');
-    chevron.classList.remove('open');
-    chevron.textContent = '▼';
-  }
-}
-
-function collapseMobileInput() {
-  const body = document.getElementById('mPanelBody');
-  const chevron = document.getElementById('mChevron');
-  body.classList.add('collapsed');
-  chevron.classList.remove('open');
-  chevron.textContent = '▼';
-}
-
-// ─── DESKTOP TUTORIAL HTML ────────────────────────────────────
-function tutorialHtml() {
-  const step = (n, emoji, title, desc) => `
-    <div class="tut-step">
-      <div class="tut-num">${n}</div>
-      <div class="tut-card">
-        <div class="tut-emoji">${emoji}</div>
-        <div class="tut-title">${title}</div>
-        <div class="tut-desc">${desc}</div>
-      </div>
-    </div>`;
-  const arrow = `<div class="tut-arrow">›</div>`;
-  return `<div class="tutorial">
-    <div class="tutorial-hd">
-      <span class="t-icon">🎬</span>
-      <h2>欢迎使用万花筒</h2>
-      <p>粘贴任意文本，自动生成分镜 · 图片 · 视频，一键下载素材</p>
-    </div>
-    <div class="tut-flow">
-      ${step(1,'📋','粘贴文本','课文、诗词<br>粘贴到左侧')}
-      ${arrow}
-      ${step(2,'⚙️','配置参数','选风格、尺寸<br>和场景数量')}
-      ${arrow}
-      ${step(3,'✨','解析分镜','AI 提取画面<br>生成提示词')}
-      ${arrow}
-      ${step(4,'🖼','批量生图','点顶部按钮<br>批量生成图片')}
-      ${arrow}
-      ${step(5,'🎬','批量生视频','图片完成后<br>批量生成视频')}
-      ${arrow}
-      ${step(6,'⬇','下载素材','下载视频素材<br>导入剪映合成')}
-    </div>
-    <div class="tut-tips">
-      <div class="tut-tips-title">使用须知</div>
-      <div class="tut-tip"><span class="tut-tip-icon">🔑</span><span><strong>首次使用</strong>：点右上角「API 配置」填入火山方舟 API Key，状态圆点变绿即可开始</span></div>
-      <div class="tut-tip"><span class="tut-tip-icon">📐</span><span><strong>输出尺寸</strong>：发抖音选 9:16 竖屏，发小红书选 3:4 或 1:1，横屏内容选 16:9</span></div>
-      <div class="tut-tip"><span class="tut-tip-icon">✏️</span><span><strong>提示词可编辑</strong>：每张卡片的「图像提示词」可手动修改后单独重新生图</span></div>
-      <div class="tut-tip"><span class="tut-tip-icon">🖼</span><span><strong>图片 / 视频切换</strong>：视频生成后，点卡片右下角小按钮可切换查看原图或视频</span></div>
-    </div>
-  </div>`;
-}
-
-// ─── MOBILE TUTORIAL HTML ─────────────────────────────────────
-function mobileTutorialHtml() {
-  const steps = [
-    ['📋','粘贴文本','课文、诗词、故事，粘贴到上方输入框'],
-    ['⚙️','配置参数','选择画面风格、尺寸和场景数量'],
-    ['✨','解析分镜','AI 自动生成场景和图像提示词'],
-    ['🖼','批量生图','一键生成所有场景图片'],
-    ['🎬','批量生视频','图片完成后一键生成视频片段'],
-    ['⬇','下载素材','下载所有视频，导入剪映合成'],
-  ];
-  return `<div class="m-tutorial">
-    <div class="m-tut-hd">
-      <span class="t-icon">🎬</span>
-      <h2>欢迎使用万花筒</h2>
-      <p>粘贴任意文本，自动生成<br>分镜 · 图片 · 视频，一键下载素材</p>
-    </div>
-    <div class="m-tut-steps">
-      ${steps.map(([emoji,title,desc], i) => `
-        <div class="m-tut-step">
-          <div class="m-tut-step-num">${i+1}</div>
-          <div class="m-tut-step-cnt">
-            <div class="m-tut-step-title">${emoji} ${title}</div>
-            <div class="m-tut-step-desc">${desc}</div>
-          </div>
-        </div>`).join('')}
-    </div>
-    <div class="tut-tips">
-      <div class="tut-tips-title">使用须知</div>
-      <div class="tut-tip"><span class="tut-tip-icon">🔑</span><span><strong>首次使用</strong>：点右上角「⚙️」填入火山方舟 API Key，状态圆点变绿即可</span></div>
-      <div class="tut-tip"><span class="tut-tip-icon">📐</span><span><strong>输出尺寸</strong>：发抖音选 9:16，小红书选 3:4 或 1:1</span></div>
-      <div class="tut-tip"><span class="tut-tip-icon">✏️</span><span><strong>提示词可编辑</strong>：每张卡片的提示词可手动修改后重新生图</span></div>
-    </div>
-  </div>`;
-}
-
-// ─── RENDER CARDS ─────────────────────────────────────────────
-function renderCards() {
-  if (IS_MOBILE_MODE) { renderCardsMobile(); return; }
-
-  const area = document.getElementById('cardsArea');
-  document.getElementById('sceneCountBadge').textContent = `${scenes.length} 个场景`;
-
-  if (!scenes.length) { area.innerHTML = tutorialHtml(); return; }
-
-  area.innerHTML = scenes.map(s => cardHtml(s)).join('');
-  setTimeout(initAutoResize, 0);
-
-  const hasVideos = scenes.some(s => s.videoUrl);
-  document.getElementById('dlAllBtn').style.display = hasVideos ? 'flex' : 'none';
-
-  const allImaged = scenes.every(s => s.imageSrc);
-  document.getElementById('batchVidBtn').disabled = !allImaged;
-}
-
-function renderCardsMobile() {
-  const area = document.getElementById('m-cardsArea');
-  const batchBar = document.getElementById('m-batchBar');
-
-  if (!scenes.length) {
-    area.innerHTML = mobileTutorialHtml();
-    if (batchBar) batchBar.style.display = 'none';
-    return;
-  }
-
-  if (batchBar) batchBar.style.display = 'flex';
-  document.getElementById('m-sceneCountBadge').textContent = `${scenes.length} 个场景`;
-  area.innerHTML = scenes.map(s => mobileCardHtml(s)).join('');
-  setTimeout(initAutoResize, 0);
-
-  const hasVideos = scenes.some(s => s.videoUrl);
-  document.getElementById('m-dlAllBtn').style.display = hasVideos ? 'flex' : 'none';
-
-  const allImaged = scenes.every(s => s.imageSrc);
-  document.getElementById('m-batchVidBtn').disabled = !allImaged;
-}
-
-// ─── DESKTOP CARD HTML ────────────────────────────────────────
-function cardHtml(s) {
-  const busy = s.state === 'generating_img' || s.state === 'generating_vid';
-  const showImg = !!s.showImage;
-  const hasVid = !!s.videoUrl;
-  const hasImg = !!s.imageSrc;
-
-  let dlBtn = '';
-  if (hasImg || hasVid) {
-    const showingVid = hasVid && !showImg;
-    dlBtn = `<button class="thumb-dl" onclick="${showingVid ? `dlVideo(${s.id})` : `dlImage(${s.id})`}" title="${showingVid ? '下载视频' : '下载图片'}">⬇</button>`;
-  }
-
-  let thumbHtml = '';
-  if (s.state === 'generating_img') {
-    thumbHtml = `<div class="card-thumb"><div class="card-gen-overlay"><div class="spinner"></div><span>生成中…</span></div></div>`;
-  } else if (s.state === 'generating_vid') {
-    thumbHtml = `<div class="card-thumb">${hasImg ? `<img src="${esc(s.imageSrc)}" style="opacity:.5"/>` : ''}<div class="card-gen-overlay"><div class="spinner"></div><span>视频生成中…</span></div></div>`;
-  } else if (hasVid && hasImg) {
-    const media = showImg ? `<img src="${esc(s.imageSrc)}"/>` : `<video src="${esc(s.videoUrl)}" loop muted autoplay playsinline style="width:100%;height:100%;object-fit:cover"></video>`;
-    thumbHtml = `<div class="card-thumb">${media}${dlBtn}<button class="thumb-toggle" onclick="toggleThumb(${s.id})" title="${showImg ? '查看视频' : '查看图片'}">${showImg ? '🎬' : '🖼'}</button></div>`;
-  } else if (hasVid) {
-    thumbHtml = `<div class="card-thumb"><video src="${esc(s.videoUrl)}" loop muted autoplay playsinline style="width:100%;height:100%;object-fit:cover"></video>${dlBtn}</div>`;
-  } else if (hasImg) {
-    thumbHtml = `<div class="card-thumb"><img src="${esc(s.imageSrc)}"/>${dlBtn}</div>`;
-  } else {
-    thumbHtml = `<div class="card-thumb"><div class="card-thumb-empty"><div class="num">${s.id}</div><span>待生成</span></div></div>`;
-  }
-
-  const durOpts = [3,4,5,6,8].map(v => `<option value="${v}" ${s.duration===v?'selected':''}>${v}s</option>`).join('');
-  const motionOpts = Object.entries(MOTION_LABELS).map(([k,v]) => `<option value="${k}" ${s.motion===k?'selected':''}>${v}</option>`).join('');
-  const statusHtml = s.statusMsg ? `<div class="card-status ${s.statusType || ''}">${esc(s.statusMsg)}</div>` : '';
-  const canVid = hasImg && s.state === 'idle';
-
-  return `<div class="scene-card" id="card-${s.id}">
-    ${thumbHtml}
-    <div class="card-body">
-      <div class="card-meta">
-        <span class="card-num">场景 ${s.id}</span>
-        <select class="card-sel" title="时长" onchange="updateScene(${s.id},'duration',+this.value)">${durOpts}</select>
-        <select class="card-sel" title="镜头运动" onchange="updateScene(${s.id},'motion',this.value)">${motionOpts}</select>
-        <button class="card-del" onclick="deleteScene(${s.id})" title="删除">×</button>
-      </div>
-      <div class="card-field">
-        <div class="card-field-label">画面描述<button class="info-icon" onclick="showSceneDetail(${s.id},this)">i</button></div>
-      </div>
-      <div class="card-field">
-        <div class="card-field-label">图像提示词</div>
-        <textarea class="card-input" rows="5" oninput="updateScene(${s.id},'prompt_en',this.value);autoResize(this)">${esc(s.prompt_en)}</textarea>
-      </div>
-      <div class="card-actions">
-        <button class="btn-card img" onclick="genImage(${s.id})" ${busy ? 'disabled' : ''}>🖼 生图</button>
-        <button class="btn-card vid" onclick="genVideo(${s.id})" ${!canVid ? 'disabled' : ''}>🎬 视频</button>
-      </div>
-      ${statusHtml}
-    </div>
-  </div>`;
-}
-
-// ─── MOBILE CARD HTML ─────────────────────────────────────────
-function mobileCardHtml(s) {
-  const busy = s.state === 'generating_img' || s.state === 'generating_vid';
-  const showImg = !!s.showImage;
-  const hasVid = !!s.videoUrl;
-  const hasImg = !!s.imageSrc;
-
-  let dlBtn = '';
-  if (hasImg || hasVid) {
-    const showingVid = hasVid && !showImg;
-    dlBtn = `<button class="thumb-dl" onclick="${showingVid ? `dlVideo(${s.id})` : `dlImage(${s.id})`}" title="${showingVid ? '下载视频' : '下载图片'}">⬇</button>`;
-  }
-
-  let thumbHtml = '';
-  if (s.state === 'generating_img') {
-    thumbHtml = `<div class="m-card-thumb"><div class="card-gen-overlay"><div class="spinner"></div><span>生成中…</span></div></div>`;
-  } else if (s.state === 'generating_vid') {
-    thumbHtml = `<div class="m-card-thumb">${hasImg ? `<img src="${esc(s.imageSrc)}" style="opacity:.5"/>` : ''}<div class="card-gen-overlay"><div class="spinner"></div><span>视频生成中…</span></div></div>`;
-  } else if (hasVid && hasImg) {
-    const media = showImg ? `<img src="${esc(s.imageSrc)}"/>` : `<video src="${esc(s.videoUrl)}" loop muted autoplay playsinline></video>`;
-    thumbHtml = `<div class="m-card-thumb">${media}${dlBtn}<button class="thumb-toggle" onclick="toggleThumb(${s.id})" title="${showImg ? '查看视频' : '查看图片'}">${showImg ? '🎬' : '🖼'}</button></div>`;
-  } else if (hasVid) {
-    thumbHtml = `<div class="m-card-thumb"><video src="${esc(s.videoUrl)}" loop muted autoplay playsinline></video>${dlBtn}</div>`;
-  } else if (hasImg) {
-    thumbHtml = `<div class="m-card-thumb"><img src="${esc(s.imageSrc)}"/>${dlBtn}</div>`;
-  } else {
-    thumbHtml = `<div class="m-card-thumb"><div class="m-thumb-empty">${s.id}</div></div>`;
-  }
-
-  const durOpts = [3,4,5,6,8].map(v => `<option value="${v}" ${s.duration===v?'selected':''}>${v}s</option>`).join('');
-  const motionOpts = Object.entries(MOTION_LABELS).map(([k,v]) => `<option value="${k}" ${s.motion===k?'selected':''}>${v}</option>`).join('');
-  const statusHtml = s.statusMsg ? `<div class="card-status ${s.statusType || ''}">${esc(s.statusMsg)}</div>` : '';
-  const canVid = hasImg && s.state === 'idle';
-
-  return `<div class="m-card" id="card-${s.id}">
-    ${thumbHtml}
-    <div class="card-body">
-      <div class="card-meta">
-        <span class="card-num">场景 ${s.id}</span>
-        <select class="card-sel" title="时长" onchange="updateScene(${s.id},'duration',+this.value)">${durOpts}</select>
-        <select class="card-sel" title="镜头运动" onchange="updateScene(${s.id},'motion',this.value)">${motionOpts}</select>
-        <button class="card-del" onclick="deleteScene(${s.id})" title="删除">×</button>
-      </div>
-      <div class="m-scene-text">${esc(s.scene_cn)}</div>
-      <div class="card-field">
-        <div class="card-field-label">图像提示词</div>
-        <textarea class="card-input" rows="3" oninput="updateScene(${s.id},'prompt_en',this.value);autoResize(this)">${esc(s.prompt_en)}</textarea>
-      </div>
-      <div class="card-actions">
-        <button class="btn-card img" onclick="genImage(${s.id})" ${busy ? 'disabled' : ''}>🖼 生图</button>
-        <button class="btn-card vid" onclick="genVideo(${s.id})" ${!canVid ? 'disabled' : ''}>🎬 视频</button>
-      </div>
-      ${statusHtml}
-    </div>
-  </div>`;
-}
-
-function showSceneDetail(id, btn) {
-  document.querySelectorAll('.scene-popup').forEach(p => p.remove());
-  const s = scenes.find(s => s.id === id);
-  if (!s) return;
-  const popup = document.createElement('div');
-  popup.className = 'scene-popup';
-  popup.textContent = s.scene_cn;
-  document.body.appendChild(popup);
-  const r = btn.getBoundingClientRect();
-  const pw = 300;
-  let left = r.left;
-  if (left + pw > window.innerWidth - 12) left = window.innerWidth - pw - 12;
-  popup.style.left = left + 'px';
-  popup.style.top = (r.bottom + 6) + 'px';
-  setTimeout(() => {
-    document.addEventListener('click', function close(e) {
-      if (!popup.contains(e.target) && e.target !== btn) { popup.remove(); document.removeEventListener('click', close); }
-    });
-  }, 0);
-}
-
-function autoResize(el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
-function initAutoResize() { document.querySelectorAll('.card-input').forEach(autoResize); }
-function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
-
-function updateScene(id, key, val) {
-  const s = scenes.find(s => s.id === id);
-  if (s) s[key] = val;
-}
-
-function deleteScene(id) {
-  scenes = scenes.filter(s => s.id !== id);
-  renderCards();
-}
-
-const SIZE_MAP = {
-  '9:16':  { size: '1440x2560', label: '9:16 竖屏',  prompt: '竖版9:16画面构图' },
-  '3:4':   { size: '1728x2304', label: '3:4 竖版',   prompt: '竖版3:4画面构图' },
-  '1:1':   { size: '2k',        label: '1:1 方形',   prompt: '方形1:1画面构图' },
-  '16:9':  { size: '2560x1440', label: '16:9 横屏',  prompt: '横版16:9画面构图' },
-};
-
-// ─── IMAGE GENERATION ─────────────────────────────────────────
-async function genImage(id) {
-  const cfg = getCfg();
-  if (!cfg.volcKey) { alert('请先配置火山方舟 API Key'); openConfig(); return; }
-
-  const s = scenes.find(s => s.id === id);
-  if (!s) return;
-
-  s.state = 'generating_img';
-  s.statusMsg = '';
-  refreshCard(id);
-
-  const sizeKey = getSelectedSize();
-  const sizeInfo = SIZE_MAP[sizeKey] || SIZE_MAP['9:16'];
-
-  const doRequest = () => fetch(getImgUrl(), {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${cfg.volcKey}` },
-    body: JSON.stringify({
-      model: cfg.imgModel,
-      prompt: s.prompt_en,
-      size: sizeInfo.size,
-      response_format: 'url',
-      watermark: false,
-      stream: false,
-    }),
-  });
-
-  let lastErr;
-  for (let attempt = 1; attempt <= 2; attempt++) {
-    try {
-      if (attempt === 2) {
-        s.statusMsg = '超时重试中…';
-        refreshCard(id);
-        await new Promise(r => setTimeout(r, 1500));
-      }
-
-      const res = await doRequest();
-      const rawText = await res.text();
-      let data;
-      try { data = JSON.parse(rawText); } catch(e) { throw new Error(`响应非 JSON：${rawText.slice(0,200)}`); }
-      if (!res.ok) throw new Error(data.error?.message || `HTTP ${res.status}`);
-
-      const item = data.data?.[0];
-      if (!item) throw new Error('无图片数据');
-      s.imageSrc = item.url || (item.b64_json ? `data:image/png;base64,${item.b64_json}` : null);
-      if (!s.imageSrc) throw new Error('无图片 URL');
-
-      s.state = 'idle';
-      s.statusMsg = attempt === 2 ? '✓ 图片已生成（重试成功）' : '✓ 图片已生成';
-      s.statusType = 'ok';
-      lastErr = null;
-      break;
-
-    } catch(e) {
-      lastErr = e;
-      // Only retry on network-level errors (timeout / fetch failure)
-      if (attempt < 2 && (e.message === 'Failed to fetch' || e.message.includes('NetworkError'))) continue;
-      break;
-    }
-  }
-
-  if (lastErr) {
-    s.state = 'idle';
-    s.statusMsg = '生图失败：' + lastErr.message;
-    s.statusType = 'err';
-  }
-
-  refreshCard(id);
-  const allImaged = scenes.every(s => s.imageSrc);
-  getEl('batchVidBtn').disabled = !allImaged;
-}
-
-// ─── VIDEO GENERATION ─────────────────────────────────────────
-async function genVideo(id) {
-  const cfg = getCfg();
-  if (!cfg.volcKey) { alert('请先配置火山方舟 API Key'); openConfig(); return; }
-
-  const s = scenes.find(s => s.id === id);
-  if (!s || !s.imageSrc) return;
-
-  s.state = 'generating_vid';
-  s.statusMsg = '提交任务…';
-  refreshCard(id);
-
-  try {
-    const b64 = s.imageSrc.startsWith('data:') ? s.imageSrc : null;
-    const content = [];
-    if (b64) content.push({ type: 'image_url', image_url: { url: b64 } });
-
-    const motionPrompts = {
-      zoom_in: 'Slowly zoom in, camera pushes forward',
-      zoom_out: 'Slowly zoom out, camera pulls back',
-      pan_left: 'Camera pans slowly to the left',
-      pan_right: 'Camera pans slowly to the right',
-      static: 'Static camera, subtle ambient movement',
-    };
-    const motionHint = motionPrompts[s.motion] || 'subtle ambient movement';
-    content.push({ type: 'text', text: `${s.prompt_en}. ${motionHint}. Duration: ${s.duration} seconds.` });
-
-    const res = await fetch(VID_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${cfg.volcKey}` },
-      body: JSON.stringify({ model: cfg.vidModel, content }),
-    });
-
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error?.message || `HTTP ${res.status}`);
-
-    const taskId = data.id;
-    if (!taskId) throw new Error('未获取到任务 ID');
-
-    s.statusMsg = `渲染中（${taskId.slice(0,10)}…）`;
-    refreshCard(id);
-
-    const videoUrl = await pollVideoTask(taskId, cfg.volcKey, (msg) => {
-      s.statusMsg = msg; refreshCard(id);
-    });
-
-    s.videoUrl = videoUrl;
-    s.state = 'idle';
-    s.statusMsg = '✓ 视频已生成';
-    s.statusType = 'ok';
-    getEl('dlAllBtn').style.display = 'flex';
-
-  } catch(e) {
-    s.state = 'idle';
-    s.statusMsg = '视频失败：' + e.message;
-    s.statusType = 'err';
-  }
-
-  refreshCard(id);
-}
-
-async function pollVideoTask(taskId, key, onStatus) {
-  const url = pollUrl(taskId);
-  const MAX = 120;
-  for (let i = 0; i < MAX; i++) {
-    await new Promise(r => setTimeout(r, 3000));
-    const res = await fetch(url, { headers: { 'Authorization': `Bearer ${key}` } });
-    const data = await res.json();
-    const st = data.status;
-    if (onStatus) onStatus(`渲染中（已等待 ${(i+1)*3}s）`);
-    if (st === 'succeeded') {
-      const url = data.content?.video_url || data.output?.video_url || data.result?.url;
-      if (!url) throw new Error('任务完成但无视频 URL');
-      return url;
-    }
-    if (st === 'failed' || st === 'cancelled') throw new Error(`任务${st}`);
-  }
-  throw new Error('等待超时（超过 6 分钟）');
-}
-
-// ─── BATCH OPERATIONS ─────────────────────────────────────────
-async function batchGenImages() {
-  const btn = getEl('batchImgBtn');
-  const orig = btn.innerHTML;
-  btn.disabled = true;
-  btn.innerHTML = '<div class="spinner sm wh"></div> 生图中…';
-  for (const s of scenes) { if (!s.imageSrc) await genImage(s.id); }
-  btn.disabled = false;
-  btn.innerHTML = orig;
-}
-
-async function batchGenVideos() {
-  const btn = getEl('batchVidBtn');
-  const orig = btn.innerHTML;
-  btn.disabled = true;
-  btn.innerHTML = '<div class="spinner sm" style="border-top-color:#111"></div> 生视频中…';
-  for (const s of scenes) { if (!s.videoUrl && s.imageSrc) await genVideo(s.id); }
-  btn.disabled = false;
-  btn.innerHTML = orig;
-}
-
-// ─── DOWNLOAD ─────────────────────────────────────────────────
-function dlImage(id) {
-  const s = scenes.find(s => s.id === id);
-  if (!s?.imageSrc) return;
-  if (s.imageSrc.startsWith('data:')) {
-    const a = document.createElement('a');
-    a.href = s.imageSrc;
-    a.download = `scene_${String(id).padStart(2,'0')}.png`;
-    a.click();
-  } else {
-    fetch(s.imageSrc)
-      .then(r => r.blob())
-      .then(blob => {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `scene_${String(id).padStart(2,'0')}.png`;
-        a.click();
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
-      })
-      .catch(() => window.open(s.imageSrc, '_blank'));
-  }
-}
-
-function dlVideo(id) {
-  const s = scenes.find(s => s.id === id);
-  if (!s?.videoUrl) return;
-  const a = document.createElement('a');
-  a.href = s.videoUrl;
-  a.download = `scene_${String(id).padStart(2,'0')}.mp4`;
-  a.click();
-}
-
-function downloadAll() {
-  scenes.filter(s => s.videoUrl).forEach((s, i) => { setTimeout(() => dlVideo(s.id), i * 500); });
-}
-
-function toggleThumb(id) {
-  const s = scenes.find(s => s.id === id);
-  if (s) { s.showImage = !s.showImage; refreshCard(id); }
-}
-
-function refreshCard(id) {
-  const s = scenes.find(s => s.id === id);
-  if (!s) return;
-  const el = document.getElementById(`card-${id}`);
-  if (!el) return;
-  el.outerHTML = IS_MOBILE_MODE ? mobileCardHtml(s) : cardHtml(s);
-  setTimeout(() => { document.querySelectorAll(`#card-${id} .card-input`).forEach(autoResize); }, 0);
-}
-
-// ─── KEY COPY / SHOW ──────────────────────────────────────────
-function toggleKeyVisible() {
-  const inp = document.getElementById('volcKey');
-  const btn = document.getElementById('keyToggleBtn');
-  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
-  else { inp.type = 'password'; btn.textContent = '👁'; }
-}
-
-function copyApiKey() {
-  const val = document.getElementById('volcKey').value.trim();
-  if (!val) { alert('Key 为空，请先填写'); return; }
-  navigator.clipboard.writeText(val).then(() => {
-    const btn = document.getElementById('keyCopyBtn');
-    btn.textContent = '已复制 ✓';
-    setTimeout(() => { btn.textContent = '复制'; }, 2000);
-  }).catch(() => { prompt('请手动复制下方 Key：', val); });
-}
-
-// ─── INIT ─────────────────────────────────────────────────────
-if (IS_MOBILE_MODE) {
-  document.body.classList.add('is-mobile');
-  document.getElementById('desktopApp').style.display = 'none';
-  document.getElementById('mobileApp').style.display = 'flex';
-  document.getElementById('m-cardsArea').innerHTML = mobileTutorialHtml();
-} else {
-  document.getElementById('tutorialPlaceholder').outerHTML = tutorialHtml();
-}
-updateStatusDot();
-</script>
 </body>
 </html>
