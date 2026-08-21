@@ -4,13 +4,13 @@ Historical archive for early single-file designer tools and compatibility redire
 
 This repository used to host a mix of experiments, including an early AI News Station page and the WanHuaTong text-to-video tool. Those active projects now live in dedicated repositories:
 
-- **AI News Station:** https://github.com/yehloolau-afk/ai-news-station
-- **WanHuaTong:** https://github.com/yehloolau-afk/wanhuatong
-- **Personal site:** https://github.com/yehloolau-afk/yehloolau-afk.github.io
+- **AI News Station:** https://github.com/yehloo-ai/ai-news-station
+- **WanHuaTong:** https://github.com/yehloo-ai/wanhuatong
+- **Personal site:** https://github.com/yehloo-ai/yehloo-ai.github.io
 
 ## Live Archive
 
-https://yehloolau-afk.github.io/designer-tools-legacy/
+https://yehloo-ai.github.io/designer-tools-legacy/
 
 ## Contents
 
